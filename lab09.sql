@@ -59,3 +59,54 @@ VALUES
 SELECT * FROM SalesLT.ProductCategory WHERE ProductCategoryID = @productCategoryID;
 SELECT * FROM SalesLT.Product WHERE ProductCategoryID = @productCategoryID;
 GO
+
+/*
+Challenge 2: Updating Products
+You have inserted data for a product, but the pricing details are not correct. 
+You must now update the records you have previously inserted to reflect the correct pricing. 
+
+1. Update product prices
+The sales manager at Adventure Works has mandated a 10% price increase for all products in 
+the Bells and Horns category. Update the rows in the SalesLT.Product table for these 
+products to increase their price by 10%.
+*/
+UPDATE SalesLT.Product
+SET ListPrice = ListPrice * 1.1
+WHERE ProductCategoryID = (
+	SELECT pc.ProductCategoryID
+	FROM SalesLT.ProductCategory pc 
+	WHERE pc.Name = 'Bells and Horns'
+);
+GO
+
+/*
+2. Discontinue products
+The new LED lights you inserted in the previous challenge are to replace all previous light products. 
+Update the SalesLT.Product table to set the DiscontinuedDate to today’s date for all products in the 
+Lights category (Product Category ID 37) other than the LED Lights product you inserted previously.
+*/
+UPDATE SalesLT.Product
+SET DiscontinuedDate = GETDATE()
+WHERE ProductCategoryID = 37;
+GO
+
+/*
+Challenge 3: Deleting Products
+The Bells and Horns category has not been successful, and it must be deleted from the database.
+
+1. Delete a product category and its products
+Delete the records for the Bells and Horns category and its products. 
+You must ensure that you delete the records from the tables in the correct order to 
+avoid a foreign-key constraint violation.
+*/
+DELETE FROM SalesLT.Product
+WHERE ProductCategoryID = (
+	SELECT ProductCategoryID
+	FROM SalesLT.ProductCategory
+	WHERE [Name] = 'Bells and Horns'
+		AND ProductNumber <> 'LT-l123'
+);
+
+DELETE FROM SalesLT.ProductCategory 
+WHERE [Name] = 'Bells and Horns'
+GO
